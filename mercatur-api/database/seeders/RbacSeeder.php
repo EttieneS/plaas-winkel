@@ -24,15 +24,24 @@ class RbacSeeder extends Seeder
                 'roles.delete' => 'Delete roles',
                 'permissions.view' => 'View permissions',
                 'permissions.assign' => 'Assign permissions',
+                'cattle.create' => 'Create cattle listings',
+                'cattle.view' => 'View cattle sales',
+                'cattle.reserve' => 'Reserve cattle sale kilograms',
             ];
             $ids = [];
             foreach ($permissions as $code => $name) {
-                $ids[] = Permission::updateOrCreate(['code' => $code], ['name' => $name])->id;
+                $ids[$code] = Permission::updateOrCreate(['code' => $code], ['name' => $name])->id;
             }
             foreach (['BUYER' => 'Buyer', 'FARMER' => 'Farmer', 'ADMIN' => 'Administrator'] as $code => $name) {
                 $role = Role::updateOrCreate(['code' => $code], ['name' => $name]);
                 if ($code === 'ADMIN') {
-                    $role->permissions()->syncWithoutDetaching($ids);
+                    $role->permissions()->syncWithoutDetaching(array_values($ids));
+                }
+                if ($code === 'FARMER') {
+                    $role->permissions()->syncWithoutDetaching([$ids['cattle.create'], $ids['cattle.view']]);
+                }
+                if ($code === 'BUYER') {
+                    $role->permissions()->syncWithoutDetaching([$ids['cattle.view'], $ids['cattle.reserve']]);
                 }
             }
         });

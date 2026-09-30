@@ -1,0 +1,9 @@
+:host { display: block; padding: 24px; max-width: 1100px; margin: auto; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+header { margin-bottom: 24px; }
+form { display: flex; flex-direction: column; gap: 16px; max-width: 600px; margin-bottom: 32px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.table-container { overflow-x: auto; border: 1px solid var(--mat-sys-outline-variant); border-radius: 12px; }
+table { width: 100%; }
+.empty { padding: 24px; }
+.field-error { color: var(--mat-sys-error); margin: 0; }

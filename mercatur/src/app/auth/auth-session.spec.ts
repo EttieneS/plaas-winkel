@@ -58,7 +58,7 @@ describe('API login and local logout', () => {
 
     await harness.navigateByUrl('/sales/1');
     const logout = Array.from(harness.routeNativeElement!.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Log out',
+      (button) => button.getAttribute('aria-label') === 'Log out',
     )!;
     logout.click();
     await harness.fixture.whenStable();

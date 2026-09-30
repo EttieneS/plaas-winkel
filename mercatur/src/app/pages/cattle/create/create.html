@@ -1,0 +1,71 @@
+<header class="page-header">
+  <p class="eyebrow">CATTLE MARKETPLACE</p>
+  <h1>Add cattle</h1>
+  <p>Create a slaughtered-cattle carcass listing. It will be saved as a draft.</p>
+</header>
+
+@if (created(); as listing) {
+  <section class="saved-listing" role="status">
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
+    <div>
+      <strong>{{ listing.title }} saved as a draft</strong>
+      <p>Listing #{{ listing.id }} &middot; {{ listing.carcass_weight_kg | number:'1.0-3' }} kg
+        &times; {{ listing.price_per_kg | currency:'ZAR':'R':'1.2-2' }}/kg
+        &middot; Total {{ listing.total_value | currency:'ZAR':'R':'1.2-2' }}</p>
+    </div>
+  </section>
+}
+
+<form [formGroup]="form" (ngSubmit)="create()">
+  <div class="form-fields">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Beef carcass" maxlength="255" />
+      <mat-error>Enter a title of up to 255 characters.</mat-error>
+    </mat-form-field>
+    @if (fieldError('title')) { <p class="field-error" role="alert">{{ fieldError('title') }}</p> }
+    <mat-form-field appearance="outline">
+      <mat-label>Description (optional)</mat-label>
+      <textarea matInput formControlName="description" placeholder="Describe the carcass" rows="3" maxlength="10000"></textarea>
+      <mat-error>Description must be 10,000 characters or fewer.</mat-error>
+    </mat-form-field>
+    @if (fieldError('description')) { <p class="field-error" role="alert">{{ fieldError('description') }}</p> }
+    <div class="number-fields">
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Carcass weight</mat-label>
+          <input matInput type="number" formControlName="carcass_weight_kg" min="0.001" max="999999.999" step="0.001" placeholder="240" />
+          <span matTextSuffix>kg</span>
+          <mat-hint>Up to 3 decimal places.</mat-hint>
+          <mat-error>Enter 0.001–999,999.999 kg, with up to 3 decimal places.</mat-error>
+        </mat-form-field>
+        @if (fieldError('carcass_weight_kg')) { <p class="field-error" role="alert">{{ fieldError('carcass_weight_kg') }}</p> }
+      </div>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Price per kg</mat-label>
+          <span matTextPrefix>R&nbsp;</span>
+          <input matInput type="number" formControlName="price_per_kg" min="0.01" max="999999.99" step="0.01" placeholder="110.00" />
+          <mat-hint>South African rand per kg.</mat-hint>
+          <mat-error>Enter R0.01–R999,999.99, with up to 2 decimal places.</mat-error>
+        </mat-form-field>
+        @if (fieldError('price_per_kg')) { <p class="field-error" role="alert">{{ fieldError('price_per_kg') }}</p> }
+      </div>
+    </div>
+  </div>
+  <section class="value-preview" aria-labelledby="value-heading">
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">calculate</mat-icon>
+    <div>
+      <h2 id="value-heading">Estimated listing value</h2>
+      <p>{{ weight | number:'1.0-3' }} kg &times; {{ price | currency:'ZAR':'R':'1.2-2' }}/kg</p>
+      <strong class="estimated-total">{{ estimatedTotal | currency:'ZAR':'R':'1.2-2' }}</strong>
+      <small>Preview only. The server calculates the saved listing value.</small>
+    </div>
+  </section>
+  <div class="actions">
+    <span class="draft-note"><mat-icon fontSet="material-symbols-outlined" aria-hidden="true">draft</mat-icon> Saved as DRAFT</span>
+    <button mat-flat-button type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Creating…' : 'Create listing' }}
+    </button>
+  </div>
+</form>

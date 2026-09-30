@@ -3,10 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-topbar',
-  imports: [MatToolbarModule, RouterLink, MatButtonModule],
+  imports: [MatToolbarModule, RouterLink, MatButtonModule, MatIconModule],
   templateUrl: './topbar.html',
   styleUrl: './topbar.scss',
 })

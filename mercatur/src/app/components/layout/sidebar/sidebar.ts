@@ -22,7 +22,8 @@ export class Sidebar {
   private readonly auth = inject(AuthService);
   readonly navigated = output<void>();
   readonly entries: readonly DrawerEntry[] = [
-    { label: 'Sales', route: '/sales', icon: 'storefront', description: 'Browse our beef boxes' },
+    { label: 'Sales', route: '/sales', icon: 'storefront', description: 'Reserve cattle kilograms' },
+    { label: 'Sell', route: '/sell', icon: 'sell', description: 'List farm products', permission: 'cattle.create' },
     { label: 'Users', route: '/users', icon: 'people', description: 'User management', permission: 'users.view' },
   ];
   readonly visibleEntries = computed(() =>

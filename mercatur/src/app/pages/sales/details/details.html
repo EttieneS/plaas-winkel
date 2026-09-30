@@ -1,12 +1,11 @@
 <a mat-button routerLink="/sales/index">Back to sales</a>
 @if (sale(); as item) {
-  <h1>{{ item.name }}</h1>
-  <p>Demo data · {{ item.farm }}</p>
-  <img [src]="item.detailImage" alt="A cartoon cow wearing sunglasses lounging on a spit braai" width="720" height="480">
-  <p>From moo to braai — just kidding!</p>
+  <h1>{{ item.reference }}</h1>
   <p>{{ item.description }}</p>
-  <p>Sample price: {{ item.price | currency:'ZAR':'symbol-narrow' }}</p>
+  <app-cattle-reservation [sale]="item" (saleUpdated)="sale.set($event)" />
+} @else if (failed()) {
+  <h1>Sale could not be loaded</h1>
+  <p>Choose a cattle sale from Sales.</p>
 } @else {
-  <h1>Sale not found</h1>
-  <p>Choose a sample box from the sales table.</p>
+  <p role="status">Loading cattle sale...</p>
 }

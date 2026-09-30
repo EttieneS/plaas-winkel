@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RbacSeeder::class);
+        $this->call(ProductSeeder::class);
 
         if (! app()->environment(['local', 'testing'])) {
             return;

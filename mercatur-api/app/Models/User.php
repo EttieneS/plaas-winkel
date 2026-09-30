@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -26,6 +27,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function cattleListings(): HasMany
+    {
+        return $this->hasMany(CattleListing::class, 'farmer_id');
+    }
+
+    public function cattleSales(): HasMany
+    {
+        return $this->hasMany(CattleSale::class, 'owner_user_id');
+    }
+
+    public function cattleSaleCommitments(): HasMany
+    {
+        return $this->hasMany(CattleSaleCommitment::class, 'buyer_user_id');
     }
 
     public function roles(): BelongsToMany

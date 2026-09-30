@@ -1,0 +1,21 @@
+<header>
+  <h1>Sell</h1>
+  <p>What are you selling?</p>
+</header>
+<mat-form-field appearance="outline">
+  <mat-label>Select product</mat-label>
+  <mat-select [disabled]="loading() || failed() || products().length === 0"
+    (selectionChange)="selectProduct($event.value)">
+    @for (product of products(); track product.slug) {
+      <mat-option [value]="product.slug">{{ product.name }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+@if (loading()) {
+  <p role="status">Loading products...</p>
+} @else if (failed()) {
+  <p role="status">Products could not be loaded.</p>
+  <button mat-stroked-button (click)="load()">Retry</button>
+} @else if (products().length === 0) {
+  <p role="status">No products are currently available for selling.</p>
+}

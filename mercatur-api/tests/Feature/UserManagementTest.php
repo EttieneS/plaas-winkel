@@ -73,7 +73,7 @@ class UserManagementTest extends TestCase
         $response->assertCreated()->assertJsonPath('success', true)
             ->assertJsonPath('message', 'User created successfully.')
             ->assertJsonPath('data.roles', ['BUYER', 'FARMER'])
-            ->assertJsonPath('data.permissions', [])
+            ->assertJsonPath('data.permissions', ['cattle.create', 'cattle.reserve', 'cattle.view'])
             ->assertJsonMissingPath('data.password')->assertJsonMissingPath('data.remember_token');
         $created = User::where('email', 'new@example.test')->firstOrFail();
         $this->assertTrue(password_verify('strong-password', $created->password));
@@ -174,6 +174,10 @@ class UserManagementTest extends TestCase
         $this->assertDatabaseCount('users', 1);
 
         $this->postJson('/api/users', $this->payload([Role::where('code', 'BUYER')->firstOrFail()->id]))
+            ->assertForbidden();
+        $role->permissions()->attach(Permission::whereIn('code', ['cattle.view', 'cattle.reserve'])->pluck('id'));
+        $actor->unsetRelation('roles');
+        $this->postJson('/api/users', $this->payload([Role::where('code', 'BUYER')->firstOrFail()->id]))
             ->assertCreated();
     }
 
@@ -183,7 +187,7 @@ class UserManagementTest extends TestCase
 
         $this->postJson('/api/users', $this->payload([Role::where('code', 'ADMIN')->firstOrFail()->id]))
             ->assertCreated()->assertJsonPath('data.roles', ['ADMIN'])
-            ->assertJsonPath('data.permissions.0', 'permissions.assign');
+            ->assertJsonPath('data.permissions.0', 'cattle.create');
     }
 
     public function test_permissions_revoked_in_the_database_are_enforced_on_the_next_request(): void

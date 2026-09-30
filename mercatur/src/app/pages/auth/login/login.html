@@ -1,23 +1,38 @@
-<div class="login-page">
-  <div class="login-container">
-    <h1>Mercatur</h1>
-    <p class="subtitle">Plaas Winkel</p>
-
-    <form (ngSubmit)="login()">
-      <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-
-        <input matInput type="email" name="email" [(ngModel)]="email" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Password</mat-label>
-
-        <input matInput type="password" name="password" [(ngModel)]="password" />
-      </mat-form-field>
-
-      <button mat-flat-button type="submit" [disabled]="submitting()">Login</button>
-    </form>
-    <p>New here? <a routerLink="/auth/register">Register an account</a></p>
-  </div>
-</div>
+<main class="login-page login-split">
+  <img class="farm-image" src="/images/login-friesian-pasture.webp"
+    alt="A black-and-white Friesian cow standing in green pasture with rolling hills behind her."
+    width="1672" height="940" fetchpriority="high" />
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="brand">
+      <img src="/images/plaas-winkel-logo.png" alt="" width="76" height="76" />
+      <div><span class="brand-name">Plaas Winkel</span><span class="brand-caption">Rooted in the farm.</span></div>
+    </div>
+    <div class="login-container">
+      <p class="eyebrow">YOUR FARM-TO-CUSTOMER MARKETPLACE</p>
+      <h1 id="login-title">Welcome back.</h1>
+      <p class="login-intro">A little closer to the farm. Sign in to continue.</p>
+      <form (ngSubmit)="login()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" name="email" autocomplete="username" [(ngModel)]="email" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" name="password" autocomplete="current-password" [(ngModel)]="password" />
+        </mat-form-field>
+        <button mat-flat-button type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+      <p class="register-link">New here? <a routerLink="/auth/register">Register an account</a></p>
+    </div>
+    <p class="login-footer">Aanlyn Plaas <span aria-hidden="true">·</span> Powered by Mercatur</p>
+  </section>
+  <aside class="farm-panel" aria-label="Farm landscape">
+    <div class="farm-caption">
+      <span class="farm-kicker">FROM THE FARM TO YOUR TABLE</span>
+      <h2>Good food starts<br />on the farm.</h2>
+      <p>Discover a closer connection to where your food comes from.</p>
+    </div>
+  </aside>
+</main>

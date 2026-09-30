@@ -1,38 +1,70 @@
-:host {
-    display: block;
-    min-height: 100vh;
-}
-
+:host { display: block; min-height: 100vh; }
 .login-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px;
-    box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px; box-sizing: border-box;
 }
+.login-container { width: 100%; max-width: 400px; }
+h1 { margin: 0; text-align: center; }
+.subtitle { margin: 8px 0 32px; text-align: center; }
+form { display: flex; flex-direction: column; gap: 8px; }
+button { height: 48px; }
 
-.login-container {
-    width: 100%;
-    max-width: 400px;
+.login-split {
+  position: relative; isolation: isolate; align-items: stretch; justify-content: stretch;
+  padding: 24px; gap: 24px; background: #31573b; color: #183d2c; min-height: 100svh;
 }
-
-h1 {
-    margin: 0;
-    text-align: center;
+.farm-image {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%;
+  object-fit: cover; object-position: 65% center;
 }
-
-.subtitle {
-    margin: 8px 0 32px;
-    text-align: center;
+.login-split::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, transparent 50%, rgba(13, 36, 23, .65));
 }
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.login-panel {
+  flex: 0 0 42%; max-width: 540px; box-sizing: border-box;
+  padding: 32px clamp(24px, 3vw, 56px); border-radius: 20px;
+  background: rgba(250, 248, 241, .97); box-shadow: 0 16px 60px rgba(13, 36, 23, .2);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
 }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand img { object-fit: contain; flex-shrink: 0; }
+.brand-name {
+  display: block; font-family: Georgia, serif; font-size: 29px; font-weight: 700;
+  letter-spacing: -1px; line-height: 1.2;
+}
+.brand-caption { display: block; color: #738073; font-size: 12px; margin-top: 5px; }
+.login-split .login-container { max-width: 420px; margin: auto 0; }
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; color: #667354; margin: 0 0 18px; }
+.login-split h1 { text-align: left; font: 500 clamp(36px, 3.2vw, 50px)/1.1 Georgia, serif; letter-spacing: -1.5px; }
+.login-intro { color: #626d61; line-height: 1.7; margin: 16px 0 30px; font-size: 14px; }
+.login-split form { gap: 4px; }
+.login-split button { height: 52px; border-radius: 10px; font-size: 15px; background: #234b35; color: white; }
+.login-split button:hover:not(:disabled) { background: #183d2c; }
+.login-split button:disabled { background: #dce2d7; color: #6a796e; }
+.register-link { margin: 24px 0 0; font-size: 13px; color: #626d61; text-align: center; }
+.register-link a { color: #234b35; font-weight: 600; text-underline-offset: 3px; }
+.login-footer { font-size: 11px; color: #677260; margin: 0; }
+.login-footer span { margin: 0 7px; }
+.farm-panel { position: relative; flex: 1; min-width: 0; }
+.farm-caption { position: absolute; left: 5%; right: 5%; bottom: 4%; color: #fffdf2; text-shadow: 0 2px 16px rgba(0, 0, 0, .5); }
+.farm-kicker { font-size: 10px; letter-spacing: 2px; font-weight: 600; }
+.farm-caption h2 { font: 400 clamp(36px, 4vw, 58px)/1.1 Georgia, serif; letter-spacing: -1.5px; margin: 16px 0; }
+.farm-caption p { font-size: 14px; line-height: 1.7; max-width: 330px; margin: 0; }
 
-button {
-    height: 48px;
+@media (max-width: 900px) {
+  .login-panel { flex-basis: 50%; padding: 28px; }
+  .brand-name { font-size: 26px; }
+}
+@media (max-width: 650px) {
+  .login-split { flex-direction: column; padding: 200px 16px 24px; gap: 24px; }
+  .farm-image { object-position: 73% top; }
+  .login-panel { padding: 24px; gap: 32px; max-width: none; }
+  .login-split .login-container { margin: 0 auto; }
+  .brand img { width: 58px; height: 58px; }
+  .login-footer { text-align: center; }
+  .farm-panel { flex: none; min-height: 175px; }
+  .farm-caption { position: relative; left: auto; right: auto; bottom: auto; padding: 0 8px; }
+  .farm-caption h2 { font-size: 32px; margin: 12px 0; }
+  .farm-caption p { font-size: 12px; }
 }

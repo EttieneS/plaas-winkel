@@ -25,7 +25,7 @@ class RbacAuthTest extends TestCase
 
         $login->assertOk()->assertJsonPath('success', true)->assertJsonPath('data.user.roles', ['ADMIN'])
             ->assertJsonPath('data.user.permissions', [
-                'permissions.assign', 'permissions.view', 'roles.assign', 'roles.create', 'roles.delete',
+                'cattle.create', 'cattle.reserve', 'cattle.view', 'permissions.assign', 'permissions.view', 'roles.assign', 'roles.create', 'roles.delete',
                 'roles.edit', 'roles.view', 'users.create', 'users.delete', 'users.edit', 'users.view',
             ])->assertJsonMissingPath('data.user.password');
         $token = $login->json('data.token');
@@ -87,8 +87,8 @@ class RbacAuthTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $this->assertDatabaseCount('roles', 3);
-        $this->assertDatabaseCount('permissions', 11);
-        $this->assertDatabaseCount('role_permissions', 11);
+        $this->assertDatabaseCount('permissions', 14);
+        $this->assertDatabaseCount('role_permissions', 18);
         $this->assertDatabaseCount('user_roles', 1);
         $this->assertTrue(password_verify('changed-password', $user->fresh()->password));
     }
@@ -134,8 +134,8 @@ class RbacAuthTest extends TestCase
         $this->assertSame($view->id, Permission::where('code', 'users.view')->firstOrFail()->id);
         $this->assertDatabaseHas('role_permissions', ['role_id' => $buyer->id, 'permission_id' => $view->id]);
         $this->assertDatabaseHas('role_permissions', ['role_id' => $admin->id, 'permission_id' => $custom->id]);
-        $this->assertDatabaseCount('permissions', 12);
-        $this->assertDatabaseCount('role_permissions', 13);
+        $this->assertDatabaseCount('permissions', 15);
+        $this->assertDatabaseCount('role_permissions', 20);
     }
 
     #[TestWith(['FARMER'])]
@@ -148,7 +148,7 @@ class RbacAuthTest extends TestCase
         $user->roles()->attach($role);
         Sanctum::actingAs($user);
 
-        $this->assertSame([], $user->permissionCodes());
+        $this->assertSame($code === 'FARMER' ? ['cattle.create', 'cattle.view'] : ['cattle.reserve', 'cattle.view'], $user->permissionCodes());
         $this->getJson('/api/users')->assertForbidden();
         $role->permissions()->attach(Permission::where('code', 'users.view')->firstOrFail());
 

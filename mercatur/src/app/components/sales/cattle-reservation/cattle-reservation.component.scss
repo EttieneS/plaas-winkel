@@ -1,0 +1,6 @@
+:host { display: block; }
+dl { display: flex; flex-wrap: wrap; gap: 20px; }
+dt, .hint { color: var(--mat-sys-on-surface-variant); }
+dd { margin: 4px 0 0; }
+form { margin-top: 24px; }
+.error { color: var(--mat-sys-error); }

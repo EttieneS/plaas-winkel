@@ -9,9 +9,20 @@ mat-toolbar {
   color: #fff;
 }
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   color: inherit;
   text-decoration: none;
   font-weight: 700;
+}
+.brand-icon {
+  flex-shrink: 0;
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: 3px;
+  border-radius: 8px;
+  background: #faf8f1;
 }
 .spacer {
   flex: 1;
@@ -24,8 +35,9 @@ mat-toolbar {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-button[mat-button] {
-  --mat-button-text-label-text-color: #fff;
+.logout-button {
+  --mat-button-outlined-label-text-color: #fff;
+  --mat-button-outlined-outline-color: rgba(255, 255, 255, .45);
 }
 @media (max-width: 599px) {
   mat-toolbar {
