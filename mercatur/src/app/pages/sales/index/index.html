@@ -1,0 +1,29 @@
+<header>
+  <div><h1>Sales</h1><p>Sample beef boxes · Demo data</p></div>
+</header>
+<div class="table-container">
+  <table mat-table [dataSource]="sales">
+    <ng-container matColumnDef="picture">
+      <th mat-header-cell *matHeaderCellDef>Picture</th>
+      <td mat-cell *matCellDef="let sale"><img [src]="sale.image" alt="Cartoon cow in a sunny pasture" width="96" height="64"></td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Box</th>
+      <td mat-cell *matCellDef="let sale">{{ sale.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="farm">
+      <th mat-header-cell *matHeaderCellDef>Farm</th>
+      <td mat-cell *matCellDef="let sale">{{ sale.farm }}</td>
+    </ng-container>
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef>Sample price</th>
+      <td mat-cell *matCellDef="let sale">{{ sale.price | currency:'ZAR':'symbol-narrow' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let sale"><a mat-flat-button [routerLink]="['/sales', sale.id]">Details</a></td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+  </table>
+</div>

@@ -1,0 +1,33 @@
+<header>
+  <div><h1>Users</h1><p>Manage people and their assigned roles.</p></div>
+  @if (auth.hasPermissions(['users.create', 'roles.assign', 'roles.view'])) {
+    <a mat-flat-button routerLink="/users/create">Create user</a>
+  }
+</header>
+@if (failed()) {
+  <p role="status">Users could not be loaded.</p>
+  <button mat-stroked-button (click)="load()" [disabled]="loading()">Retry</button>
+} @else if (loading()) {
+  <p role="status">Loading users…</p>
+} @else if (result(); as page) {
+  <div class="table-container">
+    <table>
+      <caption class="visually-hidden">Users and their assigned roles</caption>
+      <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Roles</th></tr></thead>
+      <tbody>
+        @for (user of page.users; track user.id) {
+          <tr><td>{{ user.name }}</td><td>{{ user.email }}</td><td>{{ user.roles.join(', ') || 'No roles assigned' }}</td></tr>
+        } @empty {
+          <tr><td colspan="3">No users found.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <footer>
+    <span>{{ page.pagination.total }} users · Page {{ page.pagination.current_page }} of {{ page.pagination.last_page }}</span>
+    <button mat-button [disabled]="loading() || page.pagination.current_page <= 1"
+      (click)="load(page.pagination.current_page - 1)">Previous</button>
+    <button mat-button [disabled]="loading() || page.pagination.current_page >= page.pagination.last_page"
+      (click)="load(page.pagination.current_page + 1)">Next</button>
+  </footer>
+}

@@ -1,0 +1,54 @@
+<header><h1>Create user</h1><p>Create an account and assign one or more roles.</p></header>
+@if (loadingRoles()) {
+  <p role="status">Loading available roles…</p>
+}
+@if (rolesFailed()) {
+  <p role="status">Available roles could not be loaded.</p>
+  <button mat-stroked-button (click)="loadRoles()">Retry</button>
+}
+<form [formGroup]="form" (ngSubmit)="create()">
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" autocomplete="name" maxlength="255" />
+    <mat-error>Enter a name.</mat-error>
+  </mat-form-field>
+  @if (fieldError('name')) { <p class="field-error" role="alert">{{ fieldError('name') }}</p> }
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input matInput type="email" formControlName="email" autocomplete="email" maxlength="255" />
+    <mat-error>Enter a valid email address.</mat-error>
+  </mat-form-field>
+  @if (fieldError('email')) { <p class="field-error" role="alert">{{ fieldError('email') }}</p> }
+  <mat-form-field appearance="outline">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" formControlName="password" autocomplete="new-password" maxlength="128" />
+    <mat-hint>At least 8 characters.</mat-hint>
+    <mat-error>Enter a password of at least 8 characters.</mat-error>
+  </mat-form-field>
+  @if (fieldError('password')) { <p class="field-error" role="alert">{{ fieldError('password') }}</p> }
+  <mat-form-field appearance="outline">
+    <mat-label>Confirm password</mat-label>
+    <input matInput type="password" formControlName="password_confirmation" autocomplete="new-password" />
+    <mat-error>Confirm the password.</mat-error>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Roles</mat-label>
+    <mat-select formControlName="role_ids" multiple>
+      @for (role of roles(); track role.id) {
+        <mat-option [value]="role.id">{{ role.name }} ({{ role.code }})</mat-option>
+      }
+    </mat-select>
+    <mat-error>Select at least one role.</mat-error>
+  </mat-form-field>
+  @if (fieldError('role_ids')) { <p class="field-error" role="alert">{{ fieldError('role_ids') }}</p> }
+  @if (!loadingRoles() && !rolesFailed() && !roles().length) {
+    <p role="status">There are no roles available for you to assign.</p>
+  }
+  <div class="actions">
+    <a mat-button [routerLink]="backRoute">Cancel</a>
+    <button mat-flat-button type="submit"
+      [disabled]="submitting() || loadingRoles() || rolesFailed() || !roles().length">
+      {{ submitting() ? 'Creating…' : 'Create user' }}
+    </button>
+  </div>
+</form>

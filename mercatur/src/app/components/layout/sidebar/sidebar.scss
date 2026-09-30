@@ -1,0 +1,5 @@
+:host { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding: 24px 12px; }
+.sidebar-heading { padding: 0 16px 16px; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #53675a; }
+.active { background: #e0ebdf; }
+.sidebar-footer { margin-top: auto; padding: 24px 16px 0; color: #53675a; font-weight: 600; }
+.sidebar-footer span { display: block; margin-top: 4px; font-size: 12px; font-weight: 400; }

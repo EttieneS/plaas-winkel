@@ -1,0 +1,19 @@
+<app-topbar [menuOpen]="drawer.opened" (menuToggle)="drawer.toggle()"></app-topbar>
+<mat-drawer-container class="app-container">
+    <mat-drawer
+        #drawer
+        id="main-navigation"
+        class="app-sidebar"
+        [mode]="compact()?.matches ? 'over' : 'side'"
+        [opened]="!compact()?.matches"
+    >
+        <app-sidebar (navigated)="compact()?.matches && drawer.close()"></app-sidebar>
+    </mat-drawer>
+
+    <mat-drawer-content class="app-content">
+
+        <main class="page-content">
+            <router-outlet></router-outlet>
+        </main>
+    </mat-drawer-content>
+</mat-drawer-container>

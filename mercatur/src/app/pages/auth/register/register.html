@@ -1,0 +1,31 @@
+<div class="login-page">
+  <div class="login-container">
+    <h1>Create an account</h1>
+    <p class="subtitle">Aanlyn Plaas</p>
+    <p role="status">Registration is not available yet. Please log in with an existing account.</p>
+    <form (submit)="$event.preventDefault()">
+      <mat-form-field appearance="outline">
+        <mat-label>Account type</mat-label>
+        <select matNativeControl name="accountType" disabled>
+          <option>Customer</option>
+          <option>Reseller</option>
+          <option>Farmer</option>
+        </select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput name="name" autocomplete="name" disabled />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" name="email" autocomplete="email" disabled />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" name="password" autocomplete="new-password" disabled />
+      </mat-form-field>
+      <button mat-flat-button type="submit" disabled>Create account</button>
+    </form>
+    <p>Already registered? <a routerLink="/auth/login">Log in</a></p>
+  </div>
+</div>

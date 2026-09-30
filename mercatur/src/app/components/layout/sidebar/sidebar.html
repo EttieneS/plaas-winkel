@@ -1,0 +1,12 @@
+<div class="sidebar-heading">FARM TO TABLE</div>
+<mat-nav-list aria-label="Main navigation">
+  @for (entry of visibleEntries(); track entry.route) {
+    <a mat-list-item [routerLink]="entry.route" routerLinkActive="active"
+      ariaCurrentWhenActive="page" (click)="navigated.emit()">
+      <mat-icon matListItemIcon fontSet="material-symbols-outlined">{{ entry.icon }}</mat-icon>
+      <span matListItemTitle>{{ entry.label }}</span>
+      <span matListItemLine>{{ entry.description }}</span>
+    </a>
+  }
+</mat-nav-list>
+<div class="sidebar-footer">Mercatur <span>Demo store</span></div>

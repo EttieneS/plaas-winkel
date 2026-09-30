@@ -1,0 +1,23 @@
+<div class="login-page">
+  <div class="login-container">
+    <h1>Mercatur</h1>
+    <p class="subtitle">Plaas Winkel</p>
+
+    <form (ngSubmit)="login()">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+
+        <input matInput type="email" name="email" [(ngModel)]="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+
+        <input matInput type="password" name="password" [(ngModel)]="password" />
+      </mat-form-field>
+
+      <button mat-flat-button type="submit" [disabled]="submitting()">Login</button>
+    </form>
+    <p>New here? <a routerLink="/auth/register">Register an account</a></p>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<mat-toolbar>
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Toggle navigation"
+    aria-controls="main-navigation"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="menuToggle.emit()"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+  <a class="brand" routerLink="/sales/index">Aanlyn Plaas</a>
+  <span class="spacer"></span>
+  <span class="user-name">{{ session.user()?.name }}</span>
+  <button mat-button type="button" (click)="logout()">Log out</button>
+</mat-toolbar>

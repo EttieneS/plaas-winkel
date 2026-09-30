@@ -1,0 +1,13 @@
+:host { display: block; padding: 24px; max-width: 1100px; margin: auto; }
+header, footer { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+header { justify-content: space-between; margin-bottom: 24px; }
+h1 { margin-bottom: 8px; }
+header p { color: #64748b; }
+.table-container { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 16px; border-bottom: 1px solid #e2e8f0; }
+th { background: #f8fafc; font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+footer { margin-top: 16px; }
+footer span { flex: 1; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

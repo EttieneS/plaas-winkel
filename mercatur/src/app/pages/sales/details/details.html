@@ -1,0 +1,12 @@
+<a mat-button routerLink="/sales/index">Back to sales</a>
+@if (sale(); as item) {
+  <h1>{{ item.name }}</h1>
+  <p>Demo data · {{ item.farm }}</p>
+  <img [src]="item.detailImage" alt="A cartoon cow wearing sunglasses lounging on a spit braai" width="720" height="480">
+  <p>From moo to braai — just kidding!</p>
+  <p>{{ item.description }}</p>
+  <p>Sample price: {{ item.price | currency:'ZAR':'symbol-narrow' }}</p>
+} @else {
+  <h1>Sale not found</h1>
+  <p>Choose a sample box from the sales table.</p>
+}
