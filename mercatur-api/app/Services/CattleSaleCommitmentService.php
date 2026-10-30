@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\CattleSaleCommitmentRepository;
 use App\Repositories\CattleSaleRepository;
 use Brick\Math\BigDecimal;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -48,10 +49,19 @@ class CattleSaleCommitmentService
                 'status' => CattleSaleCommitmentStatus::Confirmed,
             ]);
             if ($requested->isEqualTo($remaining)) {
-                $this->sales->markFullyCommitted($sale);
+                $this->sales->markTargetReached($sale);
             }
 
             return ['commitment' => $commitment, 'sale' => $this->sales->refreshAllocation($sale)];
         }, 5);
+    }
+
+    public function forBuyer(User $buyer): LengthAwarePaginator
+    {
+        if (! $buyer->hasPermission('cattle.reserve')) {
+            throw new AccessDeniedHttpException('You do not have permission to view your cattle reservations.');
+        }
+
+        return $this->commitments->forBuyer($buyer->id);
     }
 }

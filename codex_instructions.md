@@ -58,17 +58,20 @@ decimals are strings. Validation caps values to storage precision, requires
 positive values and limits description to 10,000 characters.
 
 Creation uses central success/error toasts, resets/closes the form and reloads
-the table only on success. Failure retains entered values. Details is disabled.
-This iteration implements no purchases, payments,
-slaughter, actual carcass weight, cuts, boxes, fulfilment, delivery or multiple
-animals in a sale. The old cattle_listings domain remains separate.
+the table only on success. Failure retains entered values. Details opens the
+farmer fulfilment page at `/sell/cattle/:id` with `cattle.manage` permission.
+Farmer acceptance, slaughter/processing recording, readiness and reservation
+collection/delivery are implemented. Payments, actual carcass weight
+reconciliation, cuts, boxes and multiple animals remain outside scope.
+The old cattle_listings domain remains separate.
 
 Cattle sales use a group-buy commitment model. Buyers reserve kilograms
 against an OPEN cattle sale. Availability is derived from confirmed
 commitments rather than trusted frontend state. The cattle sale becomes
-FULLY_COMMITTED when confirmed committed kilograms reach the estimated
-sellable weight. FULLY_COMMITTED is not equivalent to SOLD; slaughter,
-actual carcass weight and reconciliation occur later.
+TARGET_REACHED when confirmed committed kilograms reach the estimated
+sellable weight, recording target_reached_at. The target does not start the SLA.
+The lifecycle then proceeds through ACCEPTED, SLAUGHTERED, PROCESSING,
+READY_FOR_FULFILMENT and FULFILLED. See AGENTS.md for the fulfilment contract.
 
 Commitment creation must be transactional and lock the cattle sale while
 checking remaining capacity to prevent overselling.
@@ -101,7 +104,7 @@ kg and monetary arithmetic. UI estimated totals are informational only.
 The commitment service starts a transaction, locks the sale via
 CattleSaleRepository::lock (lockForUpdate), reads commitments under lock,
 validates capacity/ownership/status, inserts the commitment with the sale price,
-sets FULLY_COMMITTED at zero remaining, and returns refreshed allocation after
+sets TARGET_REACHED at zero remaining, and returns refreshed allocation after
 the atomic operation. Concurrent reservations follow the same sale-first lock
 order; deadlocks are retried up to five times. Tests include rollback, exact
 decimal boundaries and a real overlapping MySQL reservation test against a
@@ -114,5 +117,6 @@ CattleReservationComponent reuse ApiFeedbackService -> UtilToastService. The
 reservation response's freshly calculated sale replaces the displayed allocation
 without a browser refresh. Fully committed sales have no reservation controls.
 Apply the two commitment/availability migrations and reseed RbacSeeder, then
-reload/sign in to retrieve cattle.view and cattle.reserve. No payment or final
-fulfilment behaviour is implemented.
+reload/sign in to retrieve cattle.view and cattle.reserve. Farmer fulfilment
+also requires the new fulfilment migration and cattle.manage from RbacSeeder.
+No payment behaviour is implemented.

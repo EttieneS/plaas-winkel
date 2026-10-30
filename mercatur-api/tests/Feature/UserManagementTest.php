@@ -73,7 +73,7 @@ class UserManagementTest extends TestCase
         $response->assertCreated()->assertJsonPath('success', true)
             ->assertJsonPath('message', 'User created successfully.')
             ->assertJsonPath('data.roles', ['BUYER', 'FARMER'])
-            ->assertJsonPath('data.permissions', ['cattle.create', 'cattle.reserve', 'cattle.view'])
+            ->assertJsonPath('data.permissions', ['cattle.create', 'cattle.manage', 'cattle.reserve', 'cattle.view'])
             ->assertJsonMissingPath('data.password')->assertJsonMissingPath('data.remember_token');
         $created = User::where('email', 'new@example.test')->firstOrFail();
         $this->assertTrue(password_verify('strong-password', $created->password));

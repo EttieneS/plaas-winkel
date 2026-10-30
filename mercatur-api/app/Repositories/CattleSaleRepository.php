@@ -37,9 +37,26 @@ class CattleSaleRepository
             ->load(['commitments' => fn ($query) => $query->lockForUpdate()]);
     }
 
-    public function markFullyCommitted(CattleSale $sale): void
+    public function markTargetReached(CattleSale $sale): void
     {
-        $sale->update(['status' => CattleSaleStatus::FullyCommitted]);
+        $this->update($sale, ['status' => CattleSaleStatus::TargetReached, 'target_reached_at' => now()]);
+        $this->recordEvent($sale, ['from_status' => CattleSaleStatus::Open->value,
+            'to_status' => CattleSaleStatus::TargetReached->value, 'occurred_at' => $sale->target_reached_at]);
+    }
+
+    public function update(CattleSale $sale, array $attributes): void
+    {
+        $sale->update($attributes);
+    }
+
+    public function recordEvent(CattleSale $sale, array $attributes): void
+    {
+        $sale->events()->create($attributes);
+    }
+
+    public function details(CattleSale $sale): CattleSale
+    {
+        return $sale->refresh()->load(['commitments.buyer', 'events']);
     }
 
     public function refreshAllocation(CattleSale $sale): CattleSale

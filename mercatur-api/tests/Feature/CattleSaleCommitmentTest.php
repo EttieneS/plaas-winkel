@@ -121,7 +121,7 @@ class CattleSaleCommitmentTest extends TestCase
             ->assertJsonPath('errors.quantity_kg.0', 'Only 10 kg remains available.');
         $this->assertDatabaseCount('cattle_sale_commitments', 1);
         $this->postJson($this->url($sale), ['quantity_kg' => 10])->assertCreated()
-            ->assertJsonPath('data.sale.status', 'FULLY_COMMITTED')->assertJsonPath('data.sale.remaining_weight_kg', '0.000')
+            ->assertJsonPath('data.sale.status', 'TARGET_REACHED')->assertJsonPath('data.sale.remaining_weight_kg', '0.000')
             ->assertJsonPath('data.sale.percentage_committed', 100)->assertJsonPath('data.sale.can_reserve', false);
         $this->postJson($this->url($sale), ['quantity_kg' => 1])->assertConflict()
             ->assertJsonPath('message', 'This cattle sale is already fully committed.');
@@ -138,7 +138,7 @@ class CattleSaleCommitmentTest extends TestCase
         $already = BigDecimal::of('250')->minus($remaining);
         CattleSaleCommitment::factory()->create(['cattle_sale_id' => $sale->id, 'quantity_kg' => (string) $already]);
         $this->postJson($this->url($sale), ['quantity_kg' => $remaining])->assertCreated()
-            ->assertJsonPath('data.sale.remaining_weight_kg', '0.000')->assertJsonPath('data.sale.status', 'FULLY_COMMITTED');
+            ->assertJsonPath('data.sale.remaining_weight_kg', '0.000')->assertJsonPath('data.sale.status', 'TARGET_REACHED');
     }
 
     public function test_decimal_sum_and_total_rounding_do_not_use_binary_float(): void
@@ -193,7 +193,7 @@ class CattleSaleCommitmentTest extends TestCase
     {
         $this->buyer();
         $sale = $this->sale();
-        CattleSale::factory()->create(['status' => CattleSaleStatus::FullyCommitted]);
+        CattleSale::factory()->create(['status' => CattleSaleStatus::TargetReached]);
         $this->getJson('/api/cattle-sales/marketplace')->assertOk()->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $sale->id)->assertJsonMissingPath('data.0.owner_user_id')
             ->assertJsonMissingPath('data.0.commitments')->assertJsonPath('data.0.available_weight_kg', '250.000');
@@ -211,7 +211,7 @@ class CattleSaleCommitmentTest extends TestCase
             return $real->lock($id);
         });
         $this->app->instance(CattleSaleRepository::class, $repository);
-        $repository->shouldReceive('markFullyCommitted')->once()->andThrow(new \RuntimeException('Simulated persistence failure'));
+        $repository->shouldReceive('markTargetReached')->once()->andThrow(new \RuntimeException('Simulated persistence failure'));
         try {
             app(CattleSaleCommitmentService::class)->create($buyer, $sale->id, '250');
             $this->fail('Expected transaction failure.');

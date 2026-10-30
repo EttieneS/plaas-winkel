@@ -1,0 +1,43 @@
+<header>
+  <div><h1>My Reservations</h1><p>Track your reserved cattle kilograms and fulfilment.</p></div>
+  <button mat-stroked-button (click)="load()" [disabled]="loading()">Refresh</button>
+</header>
+@if (loading()) {
+  <p role="status">Loading your reservations...</p>
+} @else if (failed()) {
+  <p role="status">Your reservations could not be loaded.</p>
+  <button mat-stroked-button (click)="load()">Retry</button>
+} @else if (result(); as page) {
+  @for (reservation of page.reservations; track reservation.id) {
+    <article>
+      <h2>{{ reservation.sale.reference }}</h2>
+      <p>Reserved {{ reservation.created_at | date:'medium' }} · Reservation #{{ reservation.id }}</p>
+      <dl>
+        <div><dt>Reserved kilograms</dt><dd>{{ reservation.quantity_kg | number:'1.0-3' }} kg</dd></div>
+        <div><dt>Agreed price / kg</dt><dd>{{ reservation.price_per_kg | currency:'ZAR':'R' }}</dd></div>
+        <div><dt>Reservation value</dt><dd>{{ reservation.total_amount | currency:'ZAR':'R' }}</dd></div>
+        <div><dt>Reservation status</dt><dd>{{ label(reservation.status) }}</dd></div>
+        <div><dt>Sale stage</dt><dd>{{ label(reservation.sale.status) }}</dd></div>
+        <div><dt>Fulfilment</dt><dd>{{ label(reservation.fulfilment_state) }}</dd></div>
+      </dl>
+      <p>{{ reservation.sale.committed_weight_kg | number:'1.0-3' }} / {{ reservation.sale.estimated_weight_kg | number:'1.0-3' }} kg committed</p>
+      <mat-progress-bar mode="determinate" [value]="reservation.sale.percentage_committed" aria-label="Sale reservation target progress" />
+      <p>Fulfilment due: {{ reservation.sale.fulfilment_due_at ? (reservation.sale.fulfilment_due_at | date:'medium') : 'Not yet recorded' }}</p>
+      @if (reservation.sale.ready_for_fulfilment_at) {
+        <p>Ready for fulfilment: {{ reservation.sale.ready_for_fulfilment_at | date:'medium' }}</p>
+      }
+      @if (reservation.fulfilled_at) {
+        <p>{{ label(reservation.fulfilment_state) }}: {{ reservation.fulfilled_at | date:'medium' }}</p>
+      }
+    </article>
+  } @empty {
+    <p role="status">You have no cattle reservations yet.</p>
+  }
+  @if (page.pagination.total > 0) {
+    <nav aria-label="Reservation pages">
+      <button mat-button (click)="load(page.pagination.current_page - 1)" [disabled]="page.pagination.current_page <= 1">Previous</button>
+      <span>Page {{ page.pagination.current_page }} of {{ page.pagination.last_page }}</span>
+      <button mat-button (click)="load(page.pagination.current_page + 1)" [disabled]="page.pagination.current_page >= page.pagination.last_page">Next</button>
+    </nav>
+  }
+}

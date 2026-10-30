@@ -27,6 +27,7 @@ class RbacSeeder extends Seeder
                 'cattle.create' => 'Create cattle listings',
                 'cattle.view' => 'View cattle sales',
                 'cattle.reserve' => 'Reserve cattle sale kilograms',
+                'cattle.manage' => 'Manage fulfilment of own cattle sales',
             ];
             $ids = [];
             foreach ($permissions as $code => $name) {
@@ -38,7 +39,7 @@ class RbacSeeder extends Seeder
                     $role->permissions()->syncWithoutDetaching(array_values($ids));
                 }
                 if ($code === 'FARMER') {
-                    $role->permissions()->syncWithoutDetaching([$ids['cattle.create'], $ids['cattle.view']]);
+                    $role->permissions()->syncWithoutDetaching([$ids['cattle.create'], $ids['cattle.view'], $ids['cattle.manage']]);
                 }
                 if ($code === 'BUYER') {
                     $role->permissions()->syncWithoutDetaching([$ids['cattle.view'], $ids['cattle.reserve']]);

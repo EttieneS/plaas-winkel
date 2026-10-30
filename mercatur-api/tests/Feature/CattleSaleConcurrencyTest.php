@@ -57,7 +57,7 @@ class CattleSaleConcurrencyTest extends TestCase
             $updated = $sale->fresh()->load('commitments');
             $this->assertSame('250.000', $updated->committed_weight_kg);
             $this->assertSame('0.000', $updated->remaining_weight_kg);
-            $this->assertSame(CattleSaleStatus::FullyCommitted, $updated->status);
+            $this->assertSame(CattleSaleStatus::TargetReached, $updated->status);
         } finally {
             $first?->stop();
             $second?->stop();

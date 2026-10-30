@@ -1,0 +1,133 @@
+<header>
+  <a mat-button routerLink="/sell/cattle">Back to cattle sales</a>
+  <button mat-stroked-button type="button" (click)="load()" [disabled]="loading() || saving()">Refresh</button>
+</header>
+@if (loading()) {
+  <p role="status">Loading cattle sale details...</p>
+} @else if (failed()) {
+  <p role="alert">Cattle sale details could not be loaded. Use Refresh to try again.</p>
+} @else if (sale(); as sale) {
+  <h1>{{ sale.reference }}</h1>
+  <section aria-label="Sale summary">
+    <h2>Sale summary</h2>
+    <dl class="summary">
+      <div><dt>Estimated / target kg</dt><dd>{{ sale.estimated_weight_kg | number:'1.0-3' }}</dd></div>
+      <div><dt>Reserved kg</dt><dd>{{ sale.committed_weight_kg | number:'1.0-3' }}</dd></div>
+      <div><dt>Available kg</dt><dd>{{ sale.available_weight_kg | number:'1.0-3' }}</dd></div>
+      <div><dt>Current price / kg</dt><dd>{{ sale.price_per_kg | currency:'ZAR':'R':'1.2-2' }}</dd></div>
+      <div><dt>Status</dt><dd>{{ sale.status }}</dd></div>
+    </dl>
+    @if (sale.description) { <p>{{ sale.description }}</p> }
+  </section>
+  @if (sale.status !== 'OPEN') {
+    <section aria-label="Target and acceptance">
+      <h2>Target reached</h2>
+      <p>Reached: {{ (sale.target_reached_at | date:'medium') || 'Time not recorded' }}</p>
+      <p>Acceptance deadline: {{ (sale.acceptance_due_at | date:'medium') || 'Unknown — target time was not recorded' }}</p>
+      @if (sale.acceptance_overdue) { <p class="overdue" role="status">Farmer acceptance is overdue.</p> }
+      @if (allowed('ACCEPT')) { <p>Acceptance is required. Accepting starts your fulfilment SLA.</p> }
+    </section>
+  }
+  @if (sale.accepted_at) {
+    <section aria-label="Fulfilment SLA">
+      <h2>Fulfilment SLA</h2>
+      <p>Accepted: {{ sale.accepted_at | date:'medium' }}</p>
+      <p>Ready-for-fulfilment deadline: {{ sale.fulfilment_due_at | date:'medium' }} ({{ sale.sla_days }} days)</p>
+      @if (sale.ready_for_fulfilment_at) {
+        <p class="satisfied">Farmer SLA satisfied. Meat was marked ready {{ sale.ready_for_fulfilment_at | date:'medium' }}.</p>
+      } @else if (sale.fulfilment_overdue) {
+        <p class="overdue" role="status">Fulfilment is overdue. The meat must be made ready for collection or delivery.</p>
+      } @else {
+        <p>Time remaining as of the last update: {{ (sale.fulfilment_seconds_remaining ?? 0) / 3600 | number:'1.0-1' }} hours.</p>
+      }
+    </section>
+  }
+  <section aria-label="Processing timeline">
+    <h2>Processing timeline</h2>
+    <ol>
+      @for (stage of stages; track stage.field) {
+        <li><strong>{{ stage.label }}</strong>: {{ (sale[stage.field] | date:'medium') || 'Not recorded' }}</li>
+      }
+    </ol>
+    <div class="actions">
+      @for (action of sale.permitted_actions; track action) {
+        @if (allowed(action)) {
+          <button mat-flat-button type="button" (click)="act(action)" [disabled]="saving()">{{ labels[action] }}</button>
+        }
+      }
+    </div>
+    @if (evidenceAction(); as action) {
+      <form [formGroup]="form" (ngSubmit)="submitEvidence()" aria-label="Stage traceability evidence">
+        <h3>{{ labels[action] }}</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Slaughter / processing date and time</mat-label>
+          <input matInput type="datetime-local" formControlName="occurred_at" required>
+          <mat-error>Enter the event date and time.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Processor / abattoir name</mat-label>
+          <input matInput formControlName="processor_name" maxlength="255" required>
+          <mat-error>Enter the processor or abattoir name.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Reference / batch number</mat-label>
+          <input matInput formControlName="batch_reference" maxlength="255" required>
+          <mat-error>Enter the reference or batch number.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Notes (optional)</mat-label>
+          <textarea matInput formControlName="notes" maxlength="10000" rows="3"></textarea>
+        </mat-form-field>
+        @for (field of ['occurred_at', 'processor_name', 'batch_reference', 'notes']; track field) {
+          @if (errors()[field]; as messages) { <p class="overdue" role="alert">{{ messages.join(' ') }}</p> }
+        }
+        <div class="actions">
+          <button mat-button type="button" (click)="evidenceAction.set(null)" [disabled]="saving()">Cancel</button>
+          <button mat-flat-button type="submit" [disabled]="saving()">Save evidence</button>
+        </div>
+      </form>
+    }
+  </section>
+  <section aria-label="Reservations">
+    <h2>Reservations</h2>
+    <p>{{ sale.reservation_summary.total }} reservations · {{ sale.reservation_summary.unfulfilled }} awaiting collection / delivery.</p>
+    <div class="table-container">
+      <table>
+        <thead><tr><th>Reservation</th><th>Customer</th><th>kg</th><th>Agreed price / kg</th><th>Total</th><th>Reservation status</th><th>Fulfilment</th><th>Fulfilled at</th><th>Actions</th></tr></thead>
+        <tbody>
+          @for (reservation of sale.reservations; track reservation.id) {
+            <tr>
+              <td>#{{ reservation.id }}</td><td>{{ reservation.buyer_name }}</td>
+              <td>{{ reservation.quantity_kg | number:'1.0-3' }}</td>
+              <td>{{ reservation.price_per_kg | currency:'ZAR':'R':'1.2-2' }}</td>
+              <td>{{ reservation.total_amount | currency:'ZAR':'R':'1.2-2' }}</td>
+              <td>{{ reservation.status }}</td><td>{{ reservation.fulfilment_state }}</td>
+              <td>{{ (reservation.fulfilled_at | date:'medium') || '—' }}</td>
+              <td>
+                @if (auth.hasPermission('cattle.manage')) {
+                  @for (action of reservation.permitted_actions; track action) {
+                    <button mat-button type="button" (click)="fulfil(reservation, action)" [disabled]="saving()">
+                      {{ action === 'COLLECT' ? 'Mark Collected' : 'Mark Delivered' }}
+                    </button>
+                  }
+                }
+              </td>
+            </tr>
+          } @empty { <tr><td colspan="9">No reservations.</td></tr> }
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section aria-label="Traceability history">
+    <h2>Traceability history</h2>
+    @for (entry of sale.traceability; track entry.id) {
+      <article>
+        <h3>{{ entry.stage }} @if (entry.reservation_id) { · Reservation #{{ entry.reservation_id }} — {{ entry.fulfilment_state }} }</h3>
+        <p>Occurred: {{ entry.occurred_at | date:'medium' }} · Recorded: {{ entry.recorded_at | date:'medium' }}</p>
+        @if (entry.processor_name) { <p>Processor / abattoir: {{ entry.processor_name }}</p> }
+        @if (entry.batch_reference) { <p>Reference / batch: {{ entry.batch_reference }}</p> }
+        @if (entry.notes) { <p class="notes">{{ entry.notes }}</p> }
+      </article>
+    } @empty { <p>No lifecycle evidence has been recorded.</p> }
+  </section>
+}

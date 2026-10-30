@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\CattleReservationFulfilment;
 use App\CattleSaleCommitmentStatus;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['cattle_sale_id', 'buyer_user_id', 'quantity_kg', 'price_per_kg', 'status'])]
+#[Fillable(['cattle_sale_id', 'buyer_user_id', 'quantity_kg', 'price_per_kg', 'status', 'fulfilment_state', 'fulfilled_at'])]
 #[Hidden(['buyer_user_id'])]
 class CattleSaleCommitment extends Model
 {
@@ -24,7 +25,8 @@ class CattleSaleCommitment extends Model
 
     protected function casts(): array
     {
-        return ['quantity_kg' => 'decimal:3', 'price_per_kg' => 'decimal:2', 'status' => CattleSaleCommitmentStatus::class];
+        return ['quantity_kg' => 'decimal:3', 'price_per_kg' => 'decimal:2', 'status' => CattleSaleCommitmentStatus::class,
+            'fulfilment_state' => CattleReservationFulfilment::class, 'fulfilled_at' => 'immutable_datetime'];
     }
 
     protected function totalAmount(): Attribute

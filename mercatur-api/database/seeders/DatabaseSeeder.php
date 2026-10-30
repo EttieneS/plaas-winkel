@@ -25,5 +25,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Ettiene', 'password' => '12345'],
         );
         $user->roles()->syncWithoutDetaching([Role::where('code', 'ADMIN')->firstOrFail()->id]);
+
+        $buyer = User::firstOrCreate(
+            ['email' => 'buyer@mercatur.test'],
+            ['name' => 'Development Buyer', 'password' => '12345'],
+        );
+        $buyer->roles()->syncWithoutDetaching([Role::where('code', 'BUYER')->firstOrFail()->id]);
     }
 }

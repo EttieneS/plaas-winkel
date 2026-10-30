@@ -25,7 +25,7 @@ class RbacAuthTest extends TestCase
 
         $login->assertOk()->assertJsonPath('success', true)->assertJsonPath('data.user.roles', ['ADMIN'])
             ->assertJsonPath('data.user.permissions', [
-                'cattle.create', 'cattle.reserve', 'cattle.view', 'permissions.assign', 'permissions.view', 'roles.assign', 'roles.create', 'roles.delete',
+                'cattle.create', 'cattle.manage', 'cattle.reserve', 'cattle.view', 'permissions.assign', 'permissions.view', 'roles.assign', 'roles.create', 'roles.delete',
                 'roles.edit', 'roles.view', 'users.create', 'users.delete', 'users.edit', 'users.view',
             ])->assertJsonMissingPath('data.user.password');
         $token = $login->json('data.token');
@@ -83,14 +83,41 @@ class RbacAuthTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $user = User::where('email', 'ettiene@mercatur.test')->firstOrFail();
         $user->update(['password' => 'changed-password']);
+        $buyer = User::where('email', 'buyer@mercatur.test')->firstOrFail();
+        $buyer->update(['name' => 'Existing Buyer', 'password' => 'changed-buyer-password']);
 
         $this->seed(DatabaseSeeder::class);
 
         $this->assertDatabaseCount('roles', 3);
-        $this->assertDatabaseCount('permissions', 14);
-        $this->assertDatabaseCount('role_permissions', 18);
-        $this->assertDatabaseCount('user_roles', 1);
+        $this->assertDatabaseCount('permissions', 15);
+        $this->assertDatabaseCount('role_permissions', 20);
+        $this->assertDatabaseCount('users', 2);
+        $this->assertDatabaseCount('user_roles', 2);
         $this->assertTrue(password_verify('changed-password', $user->fresh()->password));
+        $this->assertTrue(password_verify('changed-buyer-password', $buyer->fresh()->password));
+        $this->assertSame('Existing Buyer', $buyer->fresh()->name);
+    }
+
+    public function test_development_buyer_can_log_in_with_reservation_permissions_only(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $this->postJson('/api/auth/login', ['email' => 'buyer@mercatur.test', 'password' => '12345'])
+            ->assertOk()->assertJsonPath('success', true)
+            ->assertJsonPath('data.user.roles', ['BUYER'])
+            ->assertJsonPath('data.user.permissions', ['cattle.reserve', 'cattle.view'])
+            ->assertJsonMissingPath('data.user.password');
+    }
+
+    public function test_production_seeding_does_not_create_development_accounts(): void
+    {
+        $this->app->instance('env', 'production');
+
+        $this->artisan('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true])->assertSuccessful();
+
+        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('user_roles', 0);
+        $this->assertDatabaseCount('roles', 3);
     }
 
     public function test_permission_seeding_never_assigns_admin_to_a_user(): void
@@ -134,8 +161,8 @@ class RbacAuthTest extends TestCase
         $this->assertSame($view->id, Permission::where('code', 'users.view')->firstOrFail()->id);
         $this->assertDatabaseHas('role_permissions', ['role_id' => $buyer->id, 'permission_id' => $view->id]);
         $this->assertDatabaseHas('role_permissions', ['role_id' => $admin->id, 'permission_id' => $custom->id]);
-        $this->assertDatabaseCount('permissions', 15);
-        $this->assertDatabaseCount('role_permissions', 20);
+        $this->assertDatabaseCount('permissions', 16);
+        $this->assertDatabaseCount('role_permissions', 22);
     }
 
     #[TestWith(['FARMER'])]
@@ -148,7 +175,7 @@ class RbacAuthTest extends TestCase
         $user->roles()->attach($role);
         Sanctum::actingAs($user);
 
-        $this->assertSame($code === 'FARMER' ? ['cattle.create', 'cattle.view'] : ['cattle.reserve', 'cattle.view'], $user->permissionCodes());
+        $this->assertSame($code === 'FARMER' ? ['cattle.create', 'cattle.manage', 'cattle.view'] : ['cattle.reserve', 'cattle.view'], $user->permissionCodes());
         $this->getJson('/api/users')->assertForbidden();
         $role->permissions()->attach(Permission::where('code', 'users.view')->firstOrFail());
 

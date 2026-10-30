@@ -1,0 +1,14 @@
+:host { display: block; max-width: 1200px; margin: 0 auto; padding: 24px; }
+header, .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
+section { margin: 24px 0; padding: 20px; border: 1px solid #ddd; border-radius: 12px; }
+.summary { display: flex; gap: 24px; flex-wrap: wrap; }
+dt { color: #555; } dd { margin: 6px 0; font-weight: 600; }
+li { padding: 8px 0; }
+.overdue { color: #a12622; } .satisfied { color: #256b32; }
+form { display: grid; gap: 12px; margin-top: 20px; max-width: 650px; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+article { border-top: 1px solid #ddd; padding: 12px 0; }
+.notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { :host { padding: 12px; } section { padding: 12px; } }

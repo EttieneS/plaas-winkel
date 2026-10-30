@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['reference', 'owner_user_id', 'estimated_weight_kg', 'price_per_kg',
-    'description', 'status'])]
+    'description', 'status', 'target_reached_at', 'accepted_at', 'sla_days', 'fulfilment_due_at',
+    'slaughtered_at', 'processing_started_at', 'ready_for_fulfilment_at', 'fulfilled_at'])]
 #[Hidden(['commitments'])]
 class CattleSale extends Model
 {
@@ -31,6 +32,14 @@ class CattleSale extends Model
             'estimated_weight_kg' => 'decimal:3',
             'price_per_kg' => 'decimal:2',
             'status' => CattleSaleStatus::class,
+            'target_reached_at' => 'immutable_datetime',
+            'accepted_at' => 'immutable_datetime',
+            'fulfilment_due_at' => 'immutable_datetime',
+            'slaughtered_at' => 'immutable_datetime',
+            'processing_started_at' => 'immutable_datetime',
+            'ready_for_fulfilment_at' => 'immutable_datetime',
+            'fulfilled_at' => 'immutable_datetime',
+            'sla_days' => 'integer',
         ];
     }
 
@@ -42,6 +51,11 @@ class CattleSale extends Model
     public function commitments(): HasMany
     {
         return $this->hasMany(CattleSaleCommitment::class);
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(CattleSaleEvent::class)->orderBy('id');
     }
 
     protected function committedWeightKg(): Attribute
