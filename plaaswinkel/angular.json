@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "mercatur": {
+    "plaaswinkel": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -22,6 +22,7 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "outputPath": "dist/plaaswinkel",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -68,10 +69,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "mercatur:build:production"
+              "buildTarget": "plaaswinkel:build:production"
             },
             "development": {
-              "buildTarget": "mercatur:build:development"
+              "buildTarget": "plaaswinkel:build:development"
             }
           },
           "defaultConfiguration": "development"

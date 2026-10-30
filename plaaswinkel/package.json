@@ -1,5 +1,5 @@
 {
-  "name": "mercatur",
+  "name": "plaaswinkel",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:mercatur": "node dist/mercatur/server/server.mjs"
+    "serve:ssr:plaaswinkel": "node dist/plaaswinkel/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
