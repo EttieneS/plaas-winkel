@@ -5,7 +5,7 @@ These standing instructions apply to this entire workspace and future work. They
 ## Workspace and product
 
 The root is `$HOME/projects/plaas-winkel` (currently `C:/Users/smith/projects/plaas-winkel`).
-- `mercatur/`: Angular frontend.
+- `plaaswinkel/`: Angular frontend.
 - `mercatur-api/`: Laravel backend/API.
 
 The intended repository organization is two independent Git repositories, coordinated from this parent workspace. Inspection on 2026-09-30 currently finds a .git directory at the parent and none at either application root. Reinspect each Git root before repository operations; preserve the application boundaries and current Git metadata until a repository-layout change is explicitly requested. Use one Angular application with access determined by authentication/authorization. Laravel owns business rules, permissions, inventory/reservations, and payment state. Keep the modular monolith and MVP simple.
@@ -32,7 +32,7 @@ Angular services own HTTP communication and application services. Components mus
 
 ## Actual API JSON contract
 
-The established envelope is implemented by `mercatur-api/app/Support/ApiResponse.php`, used by the base Controller helpers and API exception renderer, and mirrored by `mercatur/src/app/interfaces/api-response.interface.ts`:
+The established envelope is implemented by `mercatur-api/app/Support/ApiResponse.php`, used by the base Controller helpers and API exception renderer, and mirrored by `plaaswinkel/src/app/interfaces/api-response.interface.ts`:
 
 ```json
 { "success": true, "message": "OK", "data": null }
@@ -53,7 +53,7 @@ Implemented on 2026-09-30: controllers and API exceptions share ApiResponse. Val
 
 ## Toasts and central API feedback
 
-The application-wide user feedback mechanism is `UtilToastService` at `mercatur/src/app/services/util-toast.service.ts`. Components and services must use `toast.success(message)`, `toast.error(message)`, `toast.warning(message)`, and `toast.info(message)`. New pages/features must reuse this service; do not create their own toast/snackbar implementations or use browser `alert()` for normal feedback.
+The application-wide user feedback mechanism is `UtilToastService` at `plaaswinkel/src/app/services/util-toast.service.ts`. Components and services must use `toast.success(message)`, `toast.error(message)`, `toast.warning(message)`, and `toast.info(message)`. New pages/features must reuse this service; do not create their own toast/snackbar implementations or use browser `alert()` for normal feedback.
 
 The service wraps the existing Material overlay with the custom `UtilToast` presentation: always top-right, green success, red error, amber warning, blue info, icons, accessible dismissal, readable wrapped text, rounded corners and shadow. Notifications queue sequentially instead of overlapping. Base timeout is 5 seconds, or 10 seconds for errors; long messages receive up to 10 extra seconds. All notifications can be closed manually.
 
@@ -118,13 +118,13 @@ After seeding, log out/in or reload so Angular retrieves the new permissions. Do
 
 Inspect existing implementations and Git state; preserve unrelated work. No commits, pushes, dependency changes, relocation, or destructive operations without authorization. Keep application code cross-platform and secrets out of source and client bundles.
 
-For frontend changes run existing `npm test -- --watch=false` and `npm run build` from mercatur. Report failures and build warnings accurately. For documentation-only edits review paths, contracts, consistency, and scope; builds are unnecessary.
+For frontend changes run existing `npm test -- --watch=false` and `npm run build` from plaaswinkel. Report failures and build warnings accurately. For documentation-only edits review paths, contracts, consistency, and scope; builds are unnecessary.
 
 ## Sell entry point
 
 Sell (`/sell`) is the database-driven product selection entry point for farmer/business listings. Its Material selector loads active products through ProductService from GET `/api/products`. The API follows ProductController -> ProductService -> ProductRepository -> Product and the established JSON envelope. ProductSeeder seeds Cattle and Cabbage by unique slug without overwriting catalogue edits. Selection navigates by stable slug to `/sell/cattle` or `/sell/cabbage`, with independent domain pages. Cattle loads the signed-in user's cattle sales into a Material table and provides an inline Create Sale form. Add Cabbage Listing remains disabled. Products without an implemented route receive a Coming soon notification. See `codex_instructions.md` for the database-driven product type rule and cattle sale contract.
 
-Sell pages live in `mercatur/src/app/routes/sell/index/`, `routes/sell/cattle/index/` and `routes/sell/cabbage/index/`, assembled by `routes/sell.routes.ts`. Reusable components belong under components; interfaces and services retain their existing directories. The products table defines availability, while separate domain workflows define selling units and business rules (cattle is weight/carcass based, cabbage is quantity based). Do not put domain fields on products or create a universal listing schema with nullable product-specific columns.
+Sell pages live in `plaaswinkel/src/app/routes/sell/index/`, `routes/sell/cattle/index/` and `routes/sell/cabbage/index/`, assembled by `routes/sell.routes.ts`. Reusable components belong under components; interfaces and services retain their existing directories. The products table defines availability, while separate domain workflows define selling units and business rules (cattle is weight/carcass based, cabbage is quantity based). Do not put domain fields on products or create a universal listing schema with nullable product-specific columns.
 
 Sell drawer visibility, all Sell routes and GET `/api/products` reuse central permission checks with the existing `cattle.create` capability. FARMER (the current business/seller role) and ADMIN receive this permission through RBAC; BUYER does not by default. There is no separate BUSINESS role or role-code bypass. The drawer contains only Sales, Sell and Users subject to permissions; no product-specific entries. The existing `/cattle/create` carcass form remains separately accessible; Create Sale does not invoke it.
 

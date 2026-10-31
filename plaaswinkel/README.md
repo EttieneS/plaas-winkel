@@ -1,4 +1,4 @@
-# Mercatur
+# Plaaswinkel
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
 
@@ -34,7 +34,7 @@ To build the project run:
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+This will compile your project and store the browser build artifacts in `dist/plaaswinkel/browser/`. Laragon serves this directory at https://plaas-winkel.test. By default, the production build optimizes your application for performance and speed.
 
 ## Running unit tests
 
